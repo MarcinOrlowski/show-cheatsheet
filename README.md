@@ -1,13 +1,17 @@
 ## Preface ##
 
- Displays image file centered over specified area, either active window or whole display. 
+ Shell script that displays any image file centered over specified area, either active window or whole display. 
 
- The main purpose for this script is to let me quickly display any cheatsheet image of my
- choice (this [shell shortcuts cheatsheet](img/shell-keys-cheatsheet.png) being the main reason for this script).
- I wanted to be able to peek the sheet easily but lacked the tool to display any image over currently actvive (focused) window so
- show-cheatsheet was born. Then created global key shortcut in my desktop that triggered launch of this script and voila.
- At any time I could quickly peek the cheatsheet. It shall work with any environment as long as you can have global keyboard
- shortcuts that can run your commands). See the [Integration](#integration).
+ The main reason to write this script was to let me me quickly display cheatsheet image of my choice (with 
+ this [shell shortcuts cheatsheet](img/shell-keys-cheatsheet.png) being the main reason). I wanted to be able to peek the 
+ cheatsheet easily at any time, but I couldn't find any existing tool to show me that image in useful way - display it
+ centered over currently actvive (focused) window and be quickly dismissed. This script reads details of currently active
+ window and then steers existing image viewers to show the image centered over that window (or whole display area).
+ Once I had it working, I created global key shortcut in my desktop environment that once hit, started `show-cheatsheet`
+ and voila - I had my cheatsheet hovering over my currently used terminal window (see [Integration](#integration) for
+ how to do the same in KDE).
+
+ This script shall work with any modern window manager.
 
 ## Requirements ##
 
@@ -67,5 +71,7 @@
   - Create `New item...` and name it as you like (i.e. "Shell cheatsheet")
   - Set `<PATH-TO>/show-cheatsheet <PATH-TO>/bash-cheatsheet.png` as `Command`
   - Set `Current shortcut key` on `Advanced` tab to whatever you like
-  - Save
+  - Save.
+
+ You can now press your shortcut to check if that works.
 
