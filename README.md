@@ -20,7 +20,7 @@
 
  All these should be installable by your package manager. For Debian/Ubuntu/Kubuntu do:
 
-    sudo apt install -y imagemagic xdotool feh
+    sudo apt install -y imagemagick xdotool feh
 
 ## Usage ##
 
