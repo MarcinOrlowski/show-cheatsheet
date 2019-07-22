@@ -81,10 +81,10 @@ function display_image()
 
 	case "${VIEWER}" in
 		"feh")
-			feh --geometry ${GEOMETRY} "${IMG_FILE}"
+			feh --geometry "${GEOMETRY}" "${IMG_FILE}"
 			;;
 		"display")
-			display -geometry ${GEOMETRY} "${IMG_FILE}"
+			display -geometry "${GEOMETRY}" "${IMG_FILE}"
 			;;
 		*)
 			abort "Unsupported image viewer: ${VIEWER}"
@@ -108,7 +108,7 @@ function show_image_window_centered()
 	XDOT=$(xdotool getwindowfocus getwindowgeometry)
 	AREA=($(echo "${XDOT}" | awk '/Geometry/{print $2}' | tr "x" "\n"))
 	OFFSET=($(echo "${XDOT}" | awk '/Position/{print $2}' | tr "," "\n"))
-	display_image ${OFFSET[0]} ${OFFSET[1]} ${AREA[0]} ${AREA[1]} "${1}" "${2}"
+	display_image "${OFFSET[0]}" "${OFFSET[1]}" "${AREA[0]}" "${AREA[1]}" "${1}" "${2}"
 }
 
 #######################
@@ -127,7 +127,7 @@ function show_image_display_centered()
 
 	# get screen dimensions (WORKS on single screen only!)
 	SCR=($(xdpyinfo | awk '/dimensions/{print $2}' | tr "x" "\n"))
-	display_image 0 0 ${SCR[0]} ${SCR[1]} "${1}" "${2}"
+	display_image 0 0 "${SCR[0]}" "${SCR[1]}" "${1}" "${2}"
 }
 
 #######################
@@ -163,19 +163,22 @@ HEREDOCEND
 MODE="window"
 VIEWER="feh"
 
-while getopts ":hc:v:" opt; do
-  case ${opt} in
-    h)
-       show_help
-		exit 1
-		;;
-    c)
-		MODE="${OPTARG}"
-      ;;
-    v)
-		VIEWER="${OPTARG}"
-      ;;
-  esac
+while getopts ":hc:v:" OPT; do
+	case "${OPT}" in
+		h)
+			show_help
+			exit 1
+			;;
+		c)
+			MODE="${OPTARG}"
+			;;
+		v)
+			VIEWER="${OPTARG}"
+			;;
+		*)
+			abort "Unknown option: ${OPT}"
+			;;
+	esac
 done
 
 shift $((OPTIND -1))
