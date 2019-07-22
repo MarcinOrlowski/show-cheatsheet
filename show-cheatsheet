@@ -1,0 +1,208 @@
+#!/bin/bash
+
+#######################
+#
+# Shows any image centered over active window or whole display
+#
+# Marcin Orlowski <mail@marcinOrlowski.com>
+#
+# https://github.com/MarcinOrlowski/show-cheatsheet
+#
+
+#######################
+#
+# Displays error message and aborts
+# Args:
+#   $1: optional error message
+#
+function abort()
+{
+	echo "*** ${1:-Aborted}"
+	exit 1
+}
+
+#######################
+#
+# Checks if given tool is accessible and aborts if not.
+#
+# Args:
+#   $1: tool name to check
+#
+function abort_if_not_available()
+{
+	hash "${1}" 2>/dev/null || {
+		abort "Unable to find ${1}"
+	}
+}
+
+#######################
+#
+# Displays image using specified viewer; tries to
+# center image viewer's window over specified area
+#
+# Args:
+#   $1: display window X offset
+#   $2: display window Y offset
+#   $3: width of center area
+#   $4: height of center area
+#   $5: path to image file
+#   $6: viever name to use (optional)
+#
+function display_image()
+{
+	abort_if_not_available "identify"
+
+	OFFSET_X="${1}"
+	OFFSET_Y="${2}"
+	AREA_W="${3}"
+	AREA_H="${4}"
+	IMG_FILE="${5}"
+	VIEWER="${6:-}"
+
+	## if viewer is not specified try to locate feh first,
+	## then fallback to display
+	if [[ -z "${VIEWER}" ]]; then
+		if hash "feh"; then
+			VIEWER="feh"
+		elif hash "display"; then
+			VIEWER="display"
+		else
+			abort "No supported viewer found."
+		fi
+	fi
+
+	# get size of image file and center it over specified area.
+	TMP=$(identify -verbose "${IMG_FILE}" | awk '/geometry/{print $3}')
+	IMG=($(echo ${TMP%"+0+0"} | tr "x" "\n"))
+	POS_X=$((AREA_W/2 - IMG[0]/2 + OFFSET_X))
+	POS_Y=$((AREA_H/2 - IMG[1]/2 + OFFSET_Y))
+
+	GEOMETRY="${IMG[0]}x${IMG[1]}+${POS_X}+${POS_Y}"
+
+	case "${VIEWER}" in
+		"feh")
+			feh --geometry ${GEOMETRY} "${IMG_FILE}"
+			;;
+		"display")
+			display -geometry ${GEOMETRY} "${IMG_FILE}"
+			;;
+		*)
+			abort "Unsupported image viewer: ${VIEWER}"
+			;;
+	esac
+}
+
+#######################
+#
+# Displays image over currently active window
+#
+# Args:
+#   $1: image file
+#   $2: viewer to use (optional)
+#
+function show_image_window_centered()
+{
+	abort_if_not_available "xdotool"
+
+	# gets geometry of currently focused window: needs xdotool package
+	XDOT=$(xdotool getwindowfocus getwindowgeometry)
+	AREA=($(echo "${XDOT}" | awk '/Geometry/{print $2}' | tr "x" "\n"))
+	OFFSET=($(echo "${XDOT}" | awk '/Position/{print $2}' | tr "," "\n"))
+	display_image ${OFFSET[0]} ${OFFSET[1]} ${AREA[0]} ${AREA[1]} "${1}" "${2}"
+}
+
+#######################
+#
+# Displays image over current display
+#
+# FIXME: does not properly work in multiple display setup
+#
+# Args:
+#   $1: image file
+#   $2: viewer to use (optional)
+#
+function show_image_display_centered()
+{
+	abort_if_not_available "xdpyinfo"
+
+	# get screen dimensions (WORKS on single screen only!)
+	SCR=($(xdpyinfo | awk '/dimensions/{print $2}' | tr "x" "\n"))
+	display_image 0 0 ${SCR[0]} ${SCR[1]} "${1}" "${2}"
+}
+
+#######################
+#
+# Displays help page
+#
+function show_help()
+{
+	cat << HEREDOCEND
+Usage: $(basename "${0}") [-h] [-c MODE] [-v VIEWER] FILE
+
+   -h        : displays this page
+   -c MODE   : centering mode of displayed image
+               'window' or 'w' - center over currently active window
+               'display' or 'd' - center over whole display (screen)
+               Default is 'window'.
+   -v VIEWER : name of supported viewer to be used. Supported viewers
+               are 'feh', 'display'. Default if 'feh' with fallback
+               to 'display' if not found.
+
+   FILE      : image file to be displayed
+
+HEREDOCEND
+}
+
+#######################
+
+#if [[ $# -lt 2 || $# -gt 3 ]]; then
+#	show_help
+#	exit 1
+#fi
+
+MODE="window"
+VIEWER="feh"
+
+while getopts ":hc:v:" opt; do
+  case ${opt} in
+    h)
+       show_help
+		exit 1
+		;;
+    c)
+		MODE="${OPTARG}"
+      ;;
+    v)
+		VIEWER="${OPTARG}"
+      ;;
+  esac
+done
+
+shift $((OPTIND -1))
+
+[[ $# -ge 1 ]] || {
+	show_help
+	abort "Image file not specified"
+}
+
+IMG_FILE="${1}"
+[[ -f "${IMG_FILE}" ]] || abort "Image file not found"
+
+case "${MODE}" in
+	"w")
+		;&
+	"window")
+		show_image_window_centered "${IMG_FILE}" "${VIEWER}"
+		;;
+
+	"d")
+		;&
+	"display")
+		show_image_display_centered "${IMG_FILE}" "${VIEWER}"
+		;;
+	*)
+		show_help
+		exit 1
+		;;
+esac
+
