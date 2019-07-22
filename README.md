@@ -43,9 +43,9 @@
 
 ## Viewers ##
 
- Any new viewer can be easily added as long as it supports `--geometry` argument or offering any other way
- to specify exact position of opened window. It'd be also handy if viewer could be dismissed with just `ECS`
- key but that's optional.
+ Support for any new image viewer can be easily added, however only apps that support `--geometry` type of argument
+ or are offering any other way control placement of their opened window are of any use. It'd be also handy if viewer
+ could be dismissed with just `ECS` key but that's optional.
 
 ## Examples ##
 
