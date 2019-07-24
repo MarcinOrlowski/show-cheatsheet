@@ -73,5 +73,5 @@
   - Set `Current shortcut key` on `Advanced` tab to whatever you like
   - Save.
 
- You can now press your shortcut to check if that works.
+ You can now i.e. open new Konsole window and try your shortcut to see if it makes cheatsheet image pop up.
 
