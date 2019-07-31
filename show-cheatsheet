@@ -125,9 +125,9 @@ function show_image_display_centered()
 {
 	abort_if_not_available "xdpyinfo"
 
-	# get screen dimensions. Works correctly on single screen only
-    # On multiscreen setup would return combined width/height which
-    # is not really what we need.
+  # get screen dimensions. Works correctly on single screen only
+  # On multiscreen setup would return combined width/height which
+  # is not really what we need.
 	SCR=($(xdpyinfo | awk '/dimensions/{print $2}' | tr "x" "\n"))
 	display_image 0 0 "${SCR[0]}" "${SCR[1]}" "${1}" "${2}"
 }
