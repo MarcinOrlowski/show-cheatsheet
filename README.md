@@ -1,3 +1,5 @@
+# Show cheatsheet #
+
 ## Preface ##
 
  Shell script that displays any image file centered over specified area, either active window or whole display. 
@@ -74,4 +76,11 @@
   - Save.
 
  You can now i.e. open new Konsole window and try your shortcut to see if it makes cheatsheet image pop up.
+
+---
+
+## License ##
+
+ * Written and copyrighted &copy;2019-2021 by Marcin Orlowski <mail (#) marcinorlowski (.) com>
+ * This is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
 
